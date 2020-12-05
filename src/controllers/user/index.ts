@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { User } from '../../models/User';
+import { User, UserDocument } from '../../models/User';
 
 export const createUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
@@ -7,7 +7,7 @@ export const createUser = async (req: Request, res: Response) => {
     email,
     password
   });
-  User.findOne({ email }, (err, existingUser) => {
+  return User.findOne({ email }, (err: any, existingUser?: UserDocument) => {
     if (err) {
       return res.status(406).json({
         error: true,
@@ -36,7 +36,7 @@ export const createUser = async (req: Request, res: Response) => {
 
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
-  User.findOne({ email }, (err, existingUser) => {
+  return User.findOne({ email }, (err: any, existingUser?: UserDocument) => {
     if (err) {
       return res.status(406).json({
         error: true,
@@ -48,27 +48,30 @@ export const loginUser = async (req: Request, res: Response) => {
         error: true
       });
     }
-    existingUser.comparePassword(password, (err: Error, isMatch: boolean) => {
-      if (err) {
-        return res.status(406).json({
+    return existingUser.comparePassword(
+      password,
+      (err: Error, isMatch: boolean) => {
+        if (err) {
+          return res.status(406).json({
+            error: true,
+            errors: err
+          });
+        }
+        if (isMatch) {
+          return res.status(200).json({
+            token: existingUser.generateJWTToken()
+          });
+        }
+        return res.status(401).json({
           error: true,
-          errors: err
+          errors: 'Wrong Credentials'
         });
       }
-      if (isMatch) {
-        return res.status(200).json({
-          token: existingUser.generateJWTToken()
-        });
-      }
-      return res.status(401).json({
-        error: true,
-        errors: 'Wrong Credentials'
-      });
-    });
+    );
   });
 };
 
-export const getCurrentUser = async (req: Request, res: Response) => {
+export const getCurrentUser = (req: Request, res: Response): Response => {
   const { user } = req;
   if (user._id === req.params.userId) {
     return res.status(200).json({
