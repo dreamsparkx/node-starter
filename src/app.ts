@@ -6,7 +6,7 @@ import lusca from 'lusca';
 import mongo from 'connect-mongo';
 import flash from 'express-flash';
 import path from 'path';
-import mongoose from 'mongoose';
+import myMongoose from 'mongoose';
 import bluebird from 'bluebird';
 import { MONGODB_URI, SESSION_SECRET } from './util/secrets';
 import logger from './util/logger';
@@ -25,7 +25,8 @@ import routes from './routes';
 
 // Connect to MongoDB
 const mongoUrl = MONGODB_URI;
-mongoose.Promise = bluebird;
+const mongoose = bluebird.promisifyAll(myMongoose);
+// mongoose.Promise = bluebird;
 
 mongoose
   .connect(mongoUrl, {
