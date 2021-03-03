@@ -3,7 +3,7 @@ import compression from 'compression';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import lusca from 'lusca';
-import mongo from 'connect-mongo';
+import MongoStore from 'connect-mongo';
 import flash from 'express-flash';
 import path from 'path';
 import myMongoose from 'mongoose';
@@ -14,8 +14,6 @@ import cors from 'cors';
 import swaggerUI from 'swagger-ui-express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import { swaggerOptions } from './swagger';
-
-const MongoStore = mongo(session);
 
 import * as homeController from './controllers/home';
 
@@ -58,9 +56,11 @@ app.use(
     resave: true,
     saveUninitialized: true,
     secret: SESSION_SECRET,
-    store: new MongoStore({
-      url: mongoUrl,
-      autoReconnect: true
+    store: MongoStore.create({
+      mongoOptions: {
+        useUnifiedTopology: true
+      },
+      mongoUrl
     })
   })
 );

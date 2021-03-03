@@ -12,13 +12,13 @@ declare global {
     }
   }
   /**
- * @internal
- * Remove it when connect-mongo is updated
- * https://stackoverflow.com/questions/64845125/namespace-express-has-no-exported-member-sessiondata
- */
+   * @internal
+   * Remove it when connect-mongo is updated
+   * https://stackoverflow.com/questions/64845125/namespace-express-has-no-exported-member-sessiondata
+   */
   namespace Express {
     interface SessionData {
-      cookie: any
+      cookie: any;
     }
   }
 }
